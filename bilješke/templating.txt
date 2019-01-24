@@ -1,0 +1,55 @@
+TEMPLATING
+https://symfony.com/doc/current/templating.html
+
+Twig:
+{{ varijabla }} - Printa varijablu ili izraz
+{% naredba %} - Izvršava naredbu (npr. for loop)
+{# komentar #}
+{{ title|upper }} - filter
+https://twig.symfony.com/doc/2.x/
+
+For-loop
+{% for i in 1..10 %}
+    <div class="{{ cycle(['even', 'odd'], i) }}">
+      <!-- some HTML here -->
+    </div>
+{% endfor %}
+
+Renderanje templatea:
+1. Definiram base layout
+
+Bitno:
+{% block sidebar %}{% endblock %} - Blok koji se može overridati ili se može prikazat neki defaultni unutar ovih tagova
+
+2. Definiram child templatea
+
+Bitno:
+{% extends 'base.html.twig' %} - Prvo rendera base, pa onda ovaj template overrida ostalo; mora biti prvi tag u templateu
+Ako želimo overridano dodati s default, koristimo {{ parent() }}
+
+Svi templatei su relativni s templates/ folderom.
+Template može biti i u bundleu. Onda se poziva s npr. @AcmeBlog/Blog/index.html.twig
+
+OSTALI TAGOVI:
+https://symfony.com/doc/current/templating.html#tags-and-helpers
+
+{{ include('template', 'arguments') }} - Printa template koji nije u tome
+{{ path('route') }} - Za stvaranje linkova bez hardcodanja
+
+U kontroleru:
+    /**
+     * @Route("/", name="welcome")
+     */
+
+U PHP-u (config/routes.php):
+$routes = new RouteCollection();
+$routes->add('welcome', new Route('/', array(
+    '_controller' => 'App\Controller\WelcomeController::index',
+)));
+
+return $routes;
+
+asset() - Za statične elemente
+CSS i JS u blokove (može i zajedno s asset)
+
+Template tagovi automatski escapeaju output, da bi preventira XSS.

@@ -1,0 +1,12 @@
+Routing:
+- Rute se mogu dodavati i na samu klasu te onda u njoj ostalo preko parametara raditi
+
+/**
+ * @Route("/management")
+ */
+class ManagementController extends AbstractController
+{
+...
+
+Twig:
+- Argument može biti hashMap (izgleda kao json) ili array

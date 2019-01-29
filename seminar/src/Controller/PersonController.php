@@ -13,4 +13,3 @@ class PersonController {
         return new Response("Dobrodošli na login");
     }
 }
-

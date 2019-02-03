@@ -2,29 +2,32 @@
 
 namespace App\Controller;
 
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 
-class MentorController {
+/**
+ * @Route("/mentor")
+ */
+class MentorController extends AbstractController {
     /**
-     * @Route("mentor/students")
+     * @Route("/", name="mentor.students")
      */
     public function show_student_list() {
-        return new Response("Lista studenata");
+        return $this->render("mentor/studenti.html.twig");
     }
 
     /**
-     * @Route("mentor/subjects")
+     * @Route("/predmeti", name="mentor.subjects")
      */
     public function show_subject_list() {
-        return new Response("Lista predmeta");
+        return $this->render("mentor/predmeti.html.twig");
     }
 
     /**
-     * @Route("mentor/student/{id}")
+     * @Route("/student/{id}", name="mentor.enrolmentForm")
      */
-    public function change_student_enrolment() {
-        return new Response("Promjena upisa za bilo kojeg studenta");
+    public function show_enrolment_form($id) {
+        return $this->render("mentor/upisniList.html.twig");
     }
 }
-

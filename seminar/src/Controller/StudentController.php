@@ -2,22 +2,30 @@
 
 namespace App\Controller;
 
+use App\Entity\Predmet;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 
-class StudentController {
+/**
+ * @Route("/student")
+ */
+class StudentController extends AbstractController {
     /**
-     * @Route("register")
+     * @Route("/")
      */
-    public function register() {
-        return new Response("Registracija");
-    }
+    public function upisni_list() {
+        // Popis liste predmeta
+        $neupisani_predmeti = $this->getDoctrine()
+            ->getRepository(Predmet::class)
+            ->findAll();
 
-    /**
-     * @Route("student/upis")
-     */
-    public function upis() {
-        return new Response("Upis predmeta");
+        if (!$neupisani_predmeti) {
+            throw $this->createNotFoundException('Nema predmeta');
+        }
+
+        return $this->render('student/upisniList.html.twig',
+            ['neupisani_predmeti' => $neupisani_predmeti]);
     }
 
     /**

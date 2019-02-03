@@ -1,0 +1,24 @@
+{# templates/mentor/studenti.html.twig #}
+{% extends 'mentor/mentor.html.twig.' %}
+
+{% block title %}
+    {{ parent() }} - Popis studenata
+{% endblock %}
+
+{% block pageTitle %}
+    Studenti
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="list-group">
+            <a href="#" class="list-group-item list-group-item-action">
+                Jakov Magazin
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">Dapibus ac facilisis in</a>
+            <a href="#" class="list-group-item list-group-item-action">Morbi leo risus</a>
+            <a href="#" class="list-group-item list-group-item-action">Porta ac consectetur ac</a>
+            <a href="#" class="list-group-item list-group-item-action disabled">Vestibulum at eros</a>
+        </div>
+    </div>
+{% endblock %}

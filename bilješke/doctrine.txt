@@ -79,3 +79,6 @@ TESTIRANJE
 2. php bin/console make:fixtures
 3. Podešavanje napravljene klase
 4. php bin/console doctrine:fixtures:load
+
+Kako importati entitete iz postojeće baze podataka?
+https://symfony.com/doc/current/doctrine/reverse_engineering.html

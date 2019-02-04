@@ -12,13 +12,14 @@
 {% block body %}
     <div class="container">
         <div class="list-group">
-            <a href="#" class="list-group-item list-group-item-action">
-                Jakov Magazin
-            </a>
-            <a href="#" class="list-group-item list-group-item-action">Dapibus ac facilisis in</a>
-            <a href="#" class="list-group-item list-group-item-action">Morbi leo risus</a>
-            <a href="#" class="list-group-item list-group-item-action">Porta ac consectetur ac</a>
-            <a href="#" class="list-group-item list-group-item-action disabled">Vestibulum at eros</a>
+            {% for st in students %}
+                <a href="#" class="list-group-item list-group-item-action">
+                    <span style="float: left;">Mail: {{ st.email }}</span>
+                    <span style="float: right;">
+                        {{ st.status | capitalize }} student
+                    </span>
+                </a>
+            {% endfor %}
         </div>
     </div>
 {% endblock %}

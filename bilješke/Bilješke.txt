@@ -1,5 +1,6 @@
 Routing:
 - Rute se mogu dodavati i na samu klasu te onda u njoj ostalo preko parametara raditi
+- NE MOŽE BITI VIŠE OD 4 RUTE PO KONTROLERU
 
 /**
  * @Route("/management")
@@ -10,3 +11,11 @@ class ManagementController extends AbstractController
 
 Twig:
 - Argument može biti hashMap (izgleda kao json) ili array
+
+ERROR:
+Symfony4 Expected String but got String
+
+RJEŠENJE:
+https://stackoverflow.com/questions/50180474/symfony4-expected-string-but-got-string
+It is not an error of your code, it's a error on your IDE, I assume that you are using PHPStorm,
+go to File > Invalidate Caches/ Restart .. that should solve it.

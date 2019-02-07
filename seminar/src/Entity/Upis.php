@@ -5,12 +5,12 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Upisi
+ * Upis
  *
  * @ORM\Table(name="upisi", indexes={@ORM\Index(name="predmet_id", columns={"predmet_id"}), @ORM\Index(name="student_id", columns={"student_id"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\UpisRepository")
  */
-class Upisi
+class Upis
 {
     /**
      * @var int

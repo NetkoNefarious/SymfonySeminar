@@ -1,0 +1,78 @@
+LOGIN:
+https://symfony.com/doc/current/security/form_login_setup.html
+
+1. First, make sure you've followed the main Security Guide to install security and create your User class.
+https://symfony.com/doc/current/security.html
+
+2. Generiranje forme: php bin/console make:auth
+* This generates the following:
+	1) a login route & controller (src/Controller/SecurityController.php),
+	2) a template that renders the login form (templates/security/login.html.twig),
+	3) a Guard authenticator class that processes the login submit (src/Security/LoginFormAuthenticator.php),
+	4) updates the main security config file (config/packages/security.yaml)
+	
+* When you submit the form, the LoginFormAuthenticator will intercept the request, read the email
+(or whatever field you're using) & password from the form, find the User object,
+validate the CSRF token and check the password.
+
+3. Dodati stvari koje su potrebne
+* Depending on your setup, you'll need to finish one or more TODOs before the whole process works.
+You will at least need to fill in where you want your user to be redirected after success.
+
+PRIMJER:
+	// src/Security/LoginFormAuthenticator.php
+
+	// ...
+	public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
+	{
+		// ...
+
+	-     throw new \Exception('TODO: provide a valid redirect inside '.__FILE__);
+	+     // redirect to some "app_homepage" route - of wherever you want
+	+     return new RedirectResponse($this->urlGenerator->generate('app_homepage'));
+	}
+	
+* Unless you have any other TODOs in that file, that's it! If you're loading users from the database,
+make sure you've loaded some dummy users. Then, try to login.
+
+Controlling error messages: https://symfony.com/doc/current/security/form_login_setup.html#controlling-error-messages
+Redirecting to the Last Accessed Page with TargetPathTrait:
+https://symfony.com/doc/current/security/form_login_setup.html#redirecting-to-the-last-accessed-page-with-targetpathtrait
+
+REGISTRACIJA:
+https://symfony.com/doc/current/doctrine/registration_form.html
+
+PREDUVJETI:
+1. Install Maker Bundle: composer require symfony/maker-bundle --dev
+
+2. Napraviti User klasu: php bin/console make:user
+
+3. (Optional) Kreirati guard authenticator
+* If you want to automatically authenticate your user after registration,
+create a Guard authenticator before generating your registration form.
+
+KORACI:
+1. Napraviti registracijsku formu: php bin/console make:registration-form
+* Napravi se:
+	updated: src/Entity/Korisnik.php
+	created: src/Form/RegistrationFormType.php
+	created: src/Controller/RegistrationController.php
+	created: templates/registration/register.html.twig
+
+To je to!
+
+NAPOMENA: Why the 4096 Password Limit?
+* Notice that the plainPassword field has a max length of 4096 characters.
+For security purposes (CVE-2013-5750), Symfony limits the plain password length to 4096 characters when encoding it.
+Adding this constraint makes sure that your form will give a validation error if anyone tries a super-long password.
+
+* You'll need to add this constraint anywhere in your application where your user submits a plaintext password
+(e.g. change password form). The only place where you don't need to worry about this is your login form, since
+Symfony's Security component handles this for you.
+
+OSTALO:
+* Adding an "accept terms" Checkbox
+https://symfony.com/doc/current/doctrine/registration_form.html#adding-a-accept-terms-checkbox
+
+* Manually Authenticating after Success
+https://symfony.com/doc/current/doctrine/registration_form.html#manually-authenticating-after-success

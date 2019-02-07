@@ -1,0 +1,16 @@
+{# templates/mentor/studenti.html.twig #}
+{% extends 'mentor/mentor.html.twig.' %}
+
+{% block title %}
+    {{ parent() }} - Uređivanje
+{% endblock %}
+
+{% block pageTitle %}
+    Uređivanje predmeta
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        {{ form(form) }}
+    </div>
+{% endblock %}

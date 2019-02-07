@@ -1,0 +1,168 @@
+SECURITY:
+https://symfony.com/doc/current/security.html
+
+1. Instalacija: composer require symfony/security-bundle
+
+2a. Kreiranje klase Korisnika
+* Najlakše preko komande: php bin/console make:user
+
+* That's it! The command asks several questions so that it can generate exactly what you need.
+The most important is the User.php file itself. The only rule about your User class is that it must implement UserInterface.
+Feel free to add any other fields or logic you need.
+
+* Kasnije treba napraviti tablicu za taj entitet te napraviti make:entity za dodavanje novih polja.
+	php bin/console make:migration
+	php bin/console doctrine:migrations:migrate
+
+2b. User Provider	
+* In addition to your User class, you also need a "User provider": a class that helps with a few things, like reloading
+the User data from the session and some optional features, like remember me and impersonation.
+Fortunately, the make:user command already configured one for you in your security.yaml file under the providers key.
+
+2c. Enkripcija lozinki
+* Not all apps have "users" that need passwords. If your users have passwords, you can control how
+those passwords are encoded in security.yaml. The make:user command will pre-configure this for you:
+
+PRIMJER:
+	# config/packages/security.yaml
+	security:
+		# ...
+
+		encoders:
+			# use your user class name here
+			App\Entity\User:
+				# bcrypt or argon2i are recommended
+				# argon2i is more secure, but requires PHP 7.2 or the Sodium extension
+				algorithm: bcrypt
+				cost: 12
+				
+* Now that Symfony knows how you want to encode the passwords, you can use the UserPasswordEncoderInterface
+service to do this before saving your users to the database.
+Više: https://symfony.com/doc/current/security.html#c-encoding-passwords
+
+3a. Autentikacija i firewall
+* A "firewall" is your authentication system: the configuration below it defines how
+your users will be able to authenticate (e.g. login form, API token, etc).
+
+PRIMJER
+	# config/packages/security.yaml
+	security:
+		firewalls:
+			dev:
+				pattern: ^/(_(profiler|wdt)|css|images|js)/
+				security: false
+			main:
+				anonymous: ~
+			
+* Only one firewall is active on each request: Symfony uses the pattern key to find the first match
+(you can also match by host or other things). The dev firewall is really a fake firewall: it just makes sure that
+you don't accidentally block Symfony's dev tools - which live under URLs like /_profiler and /_wdt.
+
+* All real URLs are handled by the main firewall (no pattern key means it matches all URLs).
+
+3b. Authenticating your Users
+* Authentication in Symfony can feel a bit "magic" at first. That's because, instead of building
+a route & controller to handle login, you'll activate an authentication provider: some code that
+runs automatically before your controller is called.
+* Symfony has several built-in authentication providers. If your use-case matches one of these
+exactly, great! But, in most cases - including a login form - we recommend building a Guard
+Authenticator: a class that allows you to control every part of the authentication process.
+* Built-in Authentication Providers: https://symfony.com/doc/current/security/auth_providers.html
+
+3c. Guard authenticators: https://symfony.com/doc/current/security.html#guard-authenticators
+
+4. Denying Access, Roles and other Authorization
+* Now, you need to learn how to deny access and work with the User object. This is called authorization,
+and its job is to decide if a user can access some resource (a URL, a model object, a method call, ...).
+
+Roles:
+NAPOMENA: Every role must start with ROLE_ (otherwise, things won't work as expected).
+* Other than the above rule, a role is just a string and you can invent what you need (e.g. ROLE_PRODUCT_ADMIN).
+You'll use these roles next to grant access to specific sections of your site.
+You can also use a role hierarchy where having some roles automatically give you other roles.
+https://symfony.com/doc/current/security.html#security-role-hierarchy
+
+Add Code to Deny Access: https://symfony.com/doc/current/security.html#add-code-to-deny-access
+
+SECURING URL PATTERS (ACCESS_CONTROL)
+The most basic way to secure part of your app is to secure an entire URL pattern in security.yaml.
+
+PRIMJER:
+	# config/packages/security.yaml
+	security:
+		# ...
+
+		firewalls:
+			# ...
+			main:
+				# ...
+
+		access_control:
+			# require ROLE_ADMIN for /admin*
+			- { path: ^/admin, roles: ROLE_ADMIN }
+		
+* You can define as many URL patterns as you need - each is a regular expression.
+BUT, only one will be matched per request: Symfony starts at the top of the list and stops when it finds the first match.
+
+Securing Controllers and other Code: https://symfony.com/doc/current/security.html#securing-controllers-and-other-code
+
+Access Control in Templates: {% if is_granted('ROLE') %}
+
+PRIMJER:
+{% if is_granted('ROLE_ADMIN') %}
+    <a href="...">Delete</a>
+{% endif %}
+
+Checking to see if a User is Logged In (IS_AUTHENTICATED_FULLY):
+* If you only want to check if a user is simply logged in (you don't care about roles), you have two options.
+https://symfony.com/doc/current/security.html#checking-to-see-if-a-user-is-logged-in-is-authenticated-fully
+
+LOGGING OUT
+To enable logging out
+1. Activate the  logout config parameter under your firewall.
+
+PRIMJER:
+	# config/packages/security.yaml
+	security:
+		# ...
+
+		firewalls:
+			main:
+				# ...
+				logout:
+					path:   app_logout
+
+					# where to redirect after logout
+					# target: app_any_route
+					
+2. Next, you'll need to create a route for this URL (but not a controller)
+
+PRIMJER:
+	// src/Controller/SecurityController.php
+	namespace App\Controller;
+
+	use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+	use Symfony\Component\Routing\Annotation\Route;
+
+	class SecurityController extends AbstractController
+	{
+		/**
+		 * @Route("/logout", name="app_logout")
+		 */
+		public function logout()
+		{
+			// controller can be blank: it will never be executed!
+			throw new \Exception('Don\'t forget to activate logout in security.yaml');
+		}
+	}
+
+* Need more control of what happens after logout? Add a success_handler key under logout and point
+it to a service id of a class that implements LogoutSuccessHandlerInterface.
+
+Hierarchical roles: https://symfony.com/doc/current/security.html#hierarchical-roles
+
+Security checker (checks dependencies): https://symfony.com/doc/current/security/security_checker.html
+
+FAQ: https://symfony.com/doc/current/security.html#frequently-asked-questions
+
+Learn more: https://symfony.com/doc/current/security.html#learn-more

@@ -2,50 +2,101 @@
 
 namespace App\Controller;
 
+use App\Entity\Korisnik;
 use App\Entity\Predmet;
+use App\Entity\Upis;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Route("/student")
  */
 class StudentController extends AbstractController {
-    /**
-     * @Route("/")
-     */
-    public function upisni_list() {
-        // Popis liste predmeta
-        $neupisani_predmeti = $this->getDoctrine()
-            ->getRepository(Predmet::class)
-            ->findAll();
 
-        if (!$neupisani_predmeti) {
-            throw $this->createNotFoundException('Nema predmeta');
+    /**
+     * @Route("", name="student.enrolmentForm")
+     */
+    public function show_enrolment_form() {
+        // Student
+        $student = $this->getUser();
+
+        // Upisi
+        $enrolments = $this->getDoctrine()
+            ->getRepository(Upis::class)->findBy([
+                "student" => $student->getId()]);
+
+        // Vadimo upisane i položene predmete iz upisa
+        $enrol_subjects = [];
+        $passed_subjects = [];
+        foreach ($enrolments as $enrol) {
+            if(strcasecmp($enrol->getStatus(), "passed") == 0) {
+                $passed_subjects[] = $enrol->getPredmet();
+            }
+            $enrol_subjects[] = $enrol->getPredmet();
         }
 
-        return $this->render('student/upisniList.html.twig',
-            ['neupisani_predmeti' => $neupisani_predmeti]);
+        // Svi predmeti
+        $subjects = $this->getDoctrine()
+            ->getRepository(Predmet::class)
+            ->findAllAndOrderByStatus($student->getStatus());
+
+        return $this->render("student.html.twig", [
+            "enrol_subjects" => $enrol_subjects,
+            "passed_subjects" => $passed_subjects,
+            "subjects" => $subjects,
+            "student" => $student
+        ]);
+    }
+    /**
+     * @Route("/enrol/{subj}", name="student.enrolmentForm.enrol")
+     */
+    public function enrol_subject($subj) {
+        // Student
+        $student = $this->getUser();
+
+        // Predmet
+        $subject = $this->getDoctrine()
+            ->getRepository(Predmet::class)->find($subj);
+
+        // Novi upis
+        $upis = new Upis();
+        $upis->setStatus("enrolled");
+        $upis->setStudent($student);
+        $upis->setPredmet($subject);
+
+        // Spremanje u bazu
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($upis);
+        $entityManager->flush();
+
+        // Vraćanje na upisni list
+        return $this->redirectToRoute("student.enrolmentForm");
     }
 
     /**
-     * @Route("student/ispis")
+     * @Route("/{id}/unenrol/{subj}", name="student.enrolmentForm.unenrol")
      */
-    public function ispis() {
-        return new Response("Ispis predmeta");
-    }
+    public function unenrol_subject($subj) {
+        // Student
+        $student = $this->getUser();
 
-    /**
-     * @Route("student/polozeno")
-     */
-    public function polozeno() {
-        return new Response("Polozen predmet");
-    }
+        // Predmet
+        $subject = $this->getDoctrine()
+            ->getRepository(Predmet::class)->find($subj);
 
-    /**
-     * @Route("student/nepol")
-     */
-    public function nepol() {
-        return new Response("Nepolozen predmet");
+        // Dohvaćanje entiteta Upis
+        $upis = $this->getDoctrine()
+            ->getRepository(Upis::class)->findOneBy([
+                "student" => $student,
+                "predmet" => $subject
+            ]);
+
+        // Brisanje iz baze
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->remove($upis);
+        $entityManager->flush();
+
+        // Vraćanje na upisni list
+        return $this->redirectToRoute("student.enrolmentForm");
     }
 }

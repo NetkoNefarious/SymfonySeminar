@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Predmet
  *
  * @ORM\Table(name="predmeti", uniqueConstraints={@ORM\UniqueConstraint(name="kod", columns={"kod"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\PredmetRepository")
  */
 class Predmet
 {
@@ -66,7 +66,7 @@ class Predmet
     /**
      * @var string
      *
-     * @ORM\Column(name="izborni", type="string", length=0, nullable=false)
+     * @ORM\Column(name="izborni", type="string", nullable=false)
      */
     private $izborni;
 

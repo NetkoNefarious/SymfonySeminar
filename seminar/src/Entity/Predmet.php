@@ -28,6 +28,11 @@ class Predmet
      * @ORM\Column(name="ime", type="string", length=255, nullable=false)
      *
      * @Assert\NotBlank
+     * @Assert\Regex(
+     *     pattern="/<*>/",
+     *     match=false,
+     *     message="Ne možete staviti tag u string."
+     * )
      */
     private $ime;
 
@@ -37,6 +42,11 @@ class Predmet
      * @ORM\Column(name="kod", type="string", length=16, nullable=false)
      *
      * @Assert\NotBlank
+     * @Assert\Regex(
+     *     pattern="/<*>/",
+     *     match=false,
+     *     message="Ne možete staviti tag u string."
+     * )
      *
      */
     private $kod;
@@ -45,6 +55,13 @@ class Predmet
      * @var string
      *
      * @ORM\Column(name="program", type="text", length=65535, nullable=false)
+     *
+     * @Assert\Regex(
+     *     pattern="/<*>/",
+     *     match=false,
+     *     message="Ne možete staviti tag u string."
+     * )
+     *
      */
     private $program;
 
@@ -54,6 +71,7 @@ class Predmet
      * @ORM\Column(name="bodovi", type="integer", nullable=false)
      *
      * @Assert\NotBlank
+     *
      */
     private $bodovi;
 
@@ -79,6 +97,12 @@ class Predmet
      * @var string
      *
      * @ORM\Column(name="izborni", type="string", nullable=false)
+     *
+     * @Assert\Regex(
+     *     pattern="/<*>/",
+     *     match=false,
+     *     message="Ne možete staviti tag u string."
+     * )
      */
     private $izborni;
 

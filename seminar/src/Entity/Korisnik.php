@@ -31,6 +31,12 @@ class Korisnik implements UserInterface
      * @ORM\Column(name="email", type="string", length=64, nullable=false)
      *
      * @Assert\Email
+     * @Assert\Regex(
+     *     pattern="/<*>/",
+     *     match=false,
+     *     message="Ne možete staviti tag u string."
+     * )
+     *
      */
     private $email;
 
@@ -38,11 +44,24 @@ class Korisnik implements UserInterface
      * @var string The hashed password
      *
      * @ORM\Column(name="password", type="string", length=128, nullable=false)
+     *
+     * @Assert\Regex(
+     *     pattern="/<*>/",
+     *     match=false,
+     *     message="Ne možete staviti tag u string."
+     * )
+     *
      */
     private $password;
 
     /**
      * @ORM\Column(name="role", type="string")
+     *
+     * @Assert\Regex(
+     *     pattern="/<*>/",
+     *     match=false,
+     *     message="Ne možete staviti tag u string."
+     * )
      */
     private $role;
 
@@ -50,6 +69,12 @@ class Korisnik implements UserInterface
      * @var string
      *
      * @ORM\Column(name="status", type="string", length=0, nullable=false)
+     *
+     * @Assert\Regex(
+     *     pattern="/<*>/",
+     *     match=false,
+     *     message="Ne možete staviti tag u string."
+     * )
      */
     private $status;
 

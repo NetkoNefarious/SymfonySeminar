@@ -45,6 +45,7 @@ class SubjectController extends AbstractController
 
         // Serijalizacija
         $jsonContent = $serializer->serialize($subject, 'json');
+
         return new Response($jsonContent);
     }
 

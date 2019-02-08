@@ -25,6 +25,12 @@ class Upis
      * @var string
      *
      * @ORM\Column(name="status", type="string", length=64, nullable=false)
+     *
+     * @Assert\Regex(
+     *     pattern="/<*>/",
+     *     match=false,
+     *     message="Ne možete staviti tag u string."
+     * )
      */
     private $status;
 

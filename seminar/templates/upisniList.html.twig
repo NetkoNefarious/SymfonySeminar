@@ -22,7 +22,7 @@
 {% endblock %}
 
 {% block pageSubtitle %}
-    {{ student }}
+    {{ student | e}}
 {% endblock %}
 
 {% block body %}
@@ -74,6 +74,7 @@
                     <tbody>
                     {% endif %}
 
+                    {% autoescape %}
                     {% if subj not in enrol_subjects %}
                         <tr>
                             <th scope="row">{{ subj.kod }}</th>
@@ -92,6 +93,7 @@
                             </td>
                         </tr>
                     {% endif %}
+                    {% endautoescape %}
                     {% endfor %}
                     </tbody>
                 </table>
@@ -134,6 +136,7 @@
                     <tbody>
                     {% endif %}
 
+                    {% autoescape %}
                     {% if subj in enrol_subjects %}
                         <tr>
                             <th scope="row">{{ subj.kod }}</th>
@@ -156,6 +159,7 @@
                             </td>
                         </tr>
                     {% endif %}
+                    {% endautoescape %}
                     {% endfor %}
                     </tbody>
                 </table>

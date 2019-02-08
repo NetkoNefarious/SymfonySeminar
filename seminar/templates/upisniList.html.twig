@@ -1,8 +1,20 @@
-{# templates/mentor/upisniList.html.twig #}
+{# templates/upisniList.html.twig #}
 {% extends 'mentor/mentor.html.twig' %}
 
 {% block title %}
-    {{ parent() }} - Upisni list studenta
+    {% if is_granted('ROLE_STUDENT') %}
+        Student
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+     - Upisni list studenta
+{% endblock %}
+
+{% block nav %}
+    {% if is_granted('ROLE_STUDENT') %}
+    {% else %}
+        {{ parent() }}
+    {% endif %}
 {% endblock %}
 
 {% block pageTitle %}
@@ -69,9 +81,12 @@
                             <td scope="row">{{ subj.bodovi }}</td>
                             <td scope="row">
                                 <a class="btn btn-primary"
-                                   href="{{ path('mentor.enrolmentForm.enrol',
-                                       {"id": student.id,
-                                           "subj": subj.id}) }}">
+                                   href="{% if is_granted('ROLE_MENTOR')%}
+                                        {{ path( 'mentor.enrolmentForm.enrol', {
+                                            'id': student.id, 'subj': subj.id}) }}
+                                        {% else %}
+                                        {{ path( 'student.enrolmentForm.enrol', {'subj': subj.id}) }}
+                                   {% endif %}">
                                     Upiši
                                 </a>
                             </td>
@@ -127,9 +142,12 @@
                             <td scope="row">
                                 {% if subj not in passed_subjects %}
                                     <a class="btn btn-outline-danger"
-                                       href="{{ path('mentor.enrolmentForm.unenrol',
-                                           {"id": student.id,
-                                               "subj": subj.id}) }}">
+                                       href="{% if is_granted('ROLE_MENTOR')%}
+                                        {{ path( 'mentor.enrolmentForm.unenrol', {
+                                           'id': student.id, 'subj': subj.id}) }}
+                                        {% else %}
+                                        {{ path( 'student.enrolmentForm.unenrol', {'subj': subj.id}) }}
+                                   {% endif %}">
                                         Ispiši
                                     </a>
                                 {% else %}

@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Korisnik
@@ -28,6 +29,8 @@ class Korisnik implements UserInterface
      * @var string
      *
      * @ORM\Column(name="email", type="string", length=64, nullable=false)
+     *
+     * @Assert\Email
      */
     private $email;
 

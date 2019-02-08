@@ -2,11 +2,19 @@
 {% extends 'mentor/mentor.html.twig.' %}
 
 {% block title %}
-    {{ parent() }} - Uređivanje
+    {% if mode == 'edit' %}
+        {{ parent() }} - Uređivanje predmeta
+    {% else %}
+        {{ parent() }} - Stvaranje predmeta
+    {% endif %}
 {% endblock %}
 
 {% block pageTitle %}
-    Uređivanje predmeta
+    {% if mode == 'edit' %}
+        Uređivanje predmeta
+    {% else %}
+        Stvaranje predmeta
+    {% endif %}
 {% endblock %}
 
 {% block body %}

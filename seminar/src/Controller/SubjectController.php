@@ -91,6 +91,7 @@ class SubjectController extends AbstractController
 
         return $this->render('mentor/urediPredmet.html.twig', [
             'form' => $form->createView(),
+            'mode' => 'edit'
         ]);
     }
 

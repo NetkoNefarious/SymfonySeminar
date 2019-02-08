@@ -57,8 +57,9 @@ class Subject2Controller extends AbstractController
             return $this->redirectToRoute('mentor.subjects');
         }
 
-        return $this->render('mentor/stvoriPredmet.html.twig', [
+        return $this->render('mentor/urediPredmet.html.twig', [
             'form' => $form->createView(),
+            'mode' => 'create'
         ]);
     }
 }

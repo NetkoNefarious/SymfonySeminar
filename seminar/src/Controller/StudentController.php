@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Korisnik;
 use App\Entity\Predmet;
 use App\Entity\Upis;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -40,11 +39,11 @@ class StudentController extends AbstractController {
             ->getRepository(Predmet::class)
             ->findAllAndOrderByStatus($student->getStatus());
 
-        return $this->render("student.html.twig", [
+        return $this->render("upisniList.html.twig", [
             "enrol_subjects" => $enrol_subjects,
             "passed_subjects" => $passed_subjects,
             "subjects" => $subjects,
-            "student" => $student
+            "student" => $student,
         ]);
     }
     /**
@@ -74,7 +73,7 @@ class StudentController extends AbstractController {
     }
 
     /**
-     * @Route("/{id}/unenrol/{subj}", name="student.enrolmentForm.unenrol")
+     * @Route("/unenrol/{subj}", name="student.enrolmentForm.unenrol")
      */
     public function unenrol_subject($subj) {
         // Student

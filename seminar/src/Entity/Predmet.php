@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Predmet
@@ -25,6 +26,8 @@ class Predmet
      * @var string
      *
      * @ORM\Column(name="ime", type="string", length=255, nullable=false)
+     *
+     * @Assert\NotBlank
      */
     private $ime;
 
@@ -32,6 +35,9 @@ class Predmet
      * @var string
      *
      * @ORM\Column(name="kod", type="string", length=16, nullable=false)
+     *
+     * @Assert\NotBlank
+     *
      */
     private $kod;
 
@@ -46,6 +52,8 @@ class Predmet
      * @var int
      *
      * @ORM\Column(name="bodovi", type="integer", nullable=false)
+     *
+     * @Assert\NotBlank
      */
     private $bodovi;
 
@@ -53,6 +61,8 @@ class Predmet
      * @var int
      *
      * @ORM\Column(name="sem_redovni", type="integer", nullable=false)
+     *
+     * @Assert\NotBlank
      */
     private $semRedovni;
 
@@ -60,6 +70,8 @@ class Predmet
      * @var int
      *
      * @ORM\Column(name="sem_izvanredni", type="integer", nullable=false)
+     *
+     * @Assert\NotBlank
      */
     private $semIzvanredni;
 

@@ -52,13 +52,14 @@ class MentorController extends AbstractController {
             ->getRepository(Predmet::class)
             ->findAllAndOrderByStatus($student->getStatus());
 
-        return $this->render("student.html.twig", [
+        return $this->render("upisniList.html.twig", [
             "enrol_subjects" => $enrol_subjects,
             "passed_subjects" => $passed_subjects,
             "subjects" => $subjects,
-            "student" => $student
+            "student" => $student,
         ]);
     }
+
     /**
      * @Route("/student/{id}/enrol/{subj}", name="mentor.enrolmentForm.enrol")
      */

@@ -1,0 +1,61 @@
+{# templates/mentor/predmeti.html.twig #}
+{% extends 'mentor/mentor.html.twig' %}
+
+{% block title %}
+    {{ parent() }} - Popis predmeta
+{% endblock %}
+
+{% block pageTitle %}
+    Predmeti
+{% endblock %}
+
+{% block body %}
+    <main class="container">
+        <a href="{{ path('mentor.subject.create') }}">Novi predmet</a>
+        <ul class="list-group">
+            {% for subj in subjects %}
+                <li class="list-group-item list-group-item-action">
+                    <span>{{ subj.ime | e }} ({{ subj.kod | e }})</span>
+                    <a href="#" data-toggle="modal" id={{ subj.id }}
+                       data-target="#modalPredmet" class="editBtn">
+                        Detalji</a>
+                    <a href="{{ path('mentor.subject.edit',
+                        {"id": subj.id}) }}">
+                        Uredi
+                    </a>
+                    <a href="javascript:void(0)" class="deleteBtn" id="{{ subj.id }}d">
+                        Izbriši
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </main>
+{% endblock %}
+
+{% block modal %}
+    <div class="modal fade" id="modalPredmet" tabindex="-1" role="dialog" aria-labelledby="modalPredmet" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalPredmetTitle">
+                        Predmet
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-danger"
+                            data-dismiss="modal">Zatvori</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+    <script src={{ asset('assets/js/ajax.js')}}></script>
+{% endblock %}

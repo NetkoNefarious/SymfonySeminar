@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Registracija{% endblock %}
+
+{% block logBtn %}
+    <a class="btn btn-outline-primary"
+       href="{{ path('app_login') }}">
+        Prijava
+    </a>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    {{ form_start(registrationForm) }}
+        <h1>Register</h1>
+        {{ form_row(registrationForm.email) }}
+        {{ form_row(registrationForm.plainPassword) }}
+        {{ form_row(registrationForm.status) }}
+
+        <button class="btn btn-primary">Registriraj se</button>
+    {{ form_end(registrationForm) }}
+</div>
+{% endblock %}

@@ -1,0 +1,11 @@
+{# templates/mentor/mentor.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Mentor
+{% endblock %}
+
+{% block nav %}
+    <a class="p-2 text-dark" href="{{ path('mentor.students') }}">Studenti</a>
+    <a class="p-2 text-dark" href="{{ path('mentor.subjects') }}">Predmeti</a>
+{% endblock %}

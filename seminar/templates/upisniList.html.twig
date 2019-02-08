@@ -1,0 +1,169 @@
+{# templates/upisniList.html.twig #}
+{% extends 'mentor/mentor.html.twig' %}
+
+{% block title %}
+    {% if is_granted('ROLE_STUDENT') %}
+        Student
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+     - Upisni list studenta
+{% endblock %}
+
+{% block nav %}
+    {% if is_granted('ROLE_STUDENT') %}
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+
+{% block pageTitle %}
+    Upisni list
+{% endblock %}
+
+{% block pageSubtitle %}
+    {{ student | e}}
+{% endblock %}
+
+{% block body %}
+    <!-- Glavni sadržaj -->
+    <div class="container">
+
+        <!-- Tablice -->
+        <main class="row">
+
+            <!-- Neupisani predmeti -->
+            <div id="table_unenroled" class="col-md-6">
+                <h2 class="text-center">Predmeti</h2>
+                <hr>
+
+                {# Semester counter #}
+                {% set sem = 0 %}
+
+                {% for subj in subjects %}
+
+                {% if student.status == "redovni" %}
+                    {% set semStud = subj.semRedovni %}
+                {% else %}
+                    {% set semStud = subj.semIzvanredni %}
+                {% endif %}
+
+                {% if semStud > sem %}
+                {% if sem > 0 %}
+                    </tbody>
+                    </table>
+                {% endif %}
+                {% set sem = sem + 1 %}
+
+                {# Naslov #}
+                <h5 class="text-center">
+                    {{ sem }}. semestar
+                </h5>
+
+                {# Tablica #}
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">Šifra</th>
+                        <th scope="col">Naziv</th>
+                        <th scope="col">ECTS</th>
+                        <th scope="col">Upis</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% endif %}
+
+                    {% autoescape %}
+                    {% if subj not in enrol_subjects %}
+                        <tr>
+                            <th scope="row">{{ subj.kod }}</th>
+                            <td scope="row">{{ subj.ime }}</td>
+                            <td scope="row">{{ subj.bodovi }}</td>
+                            <td scope="row">
+                                <a class="btn btn-primary"
+                                   href="{% if is_granted('ROLE_MENTOR')%}
+                                        {{ path( 'mentor.enrolmentForm.enrol', {
+                                            'id': student.id, 'subj': subj.id}) }}
+                                        {% else %}
+                                        {{ path( 'student.enrolmentForm.enrol', {'subj': subj.id}) }}
+                                   {% endif %}">
+                                    Upiši
+                                </a>
+                            </td>
+                        </tr>
+                    {% endif %}
+                    {% endautoescape %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Upisani i položeni predmeti -->
+            <div id="table_enroled" class="col-md-6">
+
+                <!-- Upisani predmeti-->
+                <h2 class="text-center">Upisi</h2>
+                <hr>
+
+                {# Semeseter counter #}
+                {% set sem = 0 %}
+
+                {% for subj in subjects %}
+                {% if subj.semRedovni > sem %}
+                {% if  sem > 0 %}
+                    </tbody>
+                    </table>
+                {% endif %}
+                {% set sem = sem + 1 %}
+
+                {# Naslov #}
+                <h5 class="text-center">
+                    {{ sem }}. semestar
+                </h5>
+
+                {# Tablica #}
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">Šifra</th>
+                        <th scope="col">Naziv</th>
+                        <th scope="col">ECTS</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% endif %}
+
+                    {% autoescape %}
+                    {% if subj in enrol_subjects %}
+                        <tr>
+                            <th scope="row">{{ subj.kod }}</th>
+                            <td scope="row">{{ subj.ime }}</td>
+                            <td scope="row">{{ subj.bodovi }}</td>
+                            <td scope="row">
+                                {% if subj not in passed_subjects %}
+                                    <a class="btn btn-outline-danger"
+                                       href="{% if is_granted('ROLE_MENTOR')%}
+                                        {{ path( 'mentor.enrolmentForm.unenrol', {
+                                           'id': student.id, 'subj': subj.id}) }}
+                                        {% else %}
+                                        {{ path( 'student.enrolmentForm.unenrol', {'subj': subj.id}) }}
+                                   {% endif %}">
+                                        Ispiši
+                                    </a>
+                                {% else %}
+                                    Položeno
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endif %}
+                    {% endautoescape %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+{% endblock %}

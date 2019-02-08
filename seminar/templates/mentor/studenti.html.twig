@@ -1,0 +1,26 @@
+{# templates/mentor/studenti.html.twig #}
+{% extends 'mentor/mentor.html.twig.' %}
+
+{% block title %}
+    {{ parent() }} - Popis studenata
+{% endblock %}
+
+{% block pageTitle %}
+    Studenti
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="list-group">
+            {% for st in students %}
+                <a href="{{ path('mentor.enrolmentForm', {"id": st.id})}}"
+                   class="list-group-item list-group-item-action">
+                    <span style="float: left;">Mail: {{ st.email | e }}</span>
+                    <span style="float: right;">
+                        {{ st.status | capitalize | e }} student
+                    </span>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

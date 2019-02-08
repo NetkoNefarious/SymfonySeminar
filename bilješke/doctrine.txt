@@ -1,0 +1,130 @@
+DOCTRINE
+https://symfony.com/doc/current/doctrine.html
+
+1. Instalirati
+ composer require symfony/orm-pack
+ composer require symfony/maker-bundle --dev
+
+2. Podesiti konekciju na MySQL u .env
+DATABASE_URL="mysql://db_user:db_password@127.0.0.1:3306/db_name"
+
+3. Kreiranje baze podataka
+php bin/console doctrine:database:create
+
+4. Kreiranje entiteta
+php bin/console make:entity
+
+Automatski su dodane ORM anotacije
+
+5. Stvaranje tablice preko entiteta
+php bin/console make:migration
+php bin/console doctrine:migrations:migrate
+
+6. Dodavanje novih polja u entitet
+php bin/console make:entity
+php bin/console make:migration
+php bin/console doctrine:migrations:migrate
+
+7. Kreiranje kontrolera
+php bin/console make:controller ProductController
+
+8. Spremanje objekta u bazu
+$entityManager = $this->getDoctrine()->getManager();
+
+$product = new Product();
+
+// tell Doctrine you want to (eventually) save the Product (no queries yet)
+$entityManager->persist($product);
+
+// actually executes the queries (i.e. the INSERT query)
+$entityManager->flush();
+
+return new Response('Saved new product with id '.$product->getId());
+
+9. Pregled tablice
+php bin/console doctrine:query:sql 'SELECT * FROM product'
+
+10. Fetchanje podataka (kroz repozitorij)
+
+    $product = $this->getDoctrine()
+        ->getRepository(Product::class)
+        ->find($id);
+
+    if (!$product) {
+        throw $this->createNotFoundException(
+            'No product found for id '.$id
+        );
+    }
+
+    return new Response('Check out this great product: '.$product->getName());
+
+- helper metode:
+find(), findOneBy, findBy(["atr" => "value"], findAll
+
+SENSIO - Automatsko fetchanje i jednostavniji php
+
+UPDATE - Fetchanje pa dodavanje (bez persistance)
+
+DELETE:
+$entityManager->remove($product);
+$entityManager->flush();
+
+Za kompleksnije querije, make:entity radi i Repository klasu za entitet
+Isto tako, Query Builder u Repository klasi - https://symfony.com/doc/current/doctrine.html#querying-for-objects-the-repository
+
+Može se i queriat direktno u metodi
+
+TESTIRANJE
+1. composer require doctrine/doctrine-fixtures-bundle --dev
+2. php bin/console make:fixtures
+3. Podešavanje napravljene klase
+4. php bin/console doctrine:fixtures:load
+
+Kako importati entitete iz postojeće baze podataka?
+https://symfony.com/doc/current/doctrine/reverse_engineering.html
+Isto tako se nalazi u dokumentaciji to.
+
+RELACIJE - https://symfony.com/doc/current/doctrine/associations.html
+2 tipa:
+* ManyToOne / OneToMany
+* ManyToMany - Uses a join table and is needed when both sides of the relationship can have many of the other side
+(e.g. "students" and "classes": each student is in many classes, and each class has many students).
+* OneToOne - Korištenje kao i kod ManyToOne
+
+Kako napraviti ManyToOne/OneToMany asocijaciju?
+1. Kreiramo entitet: php bin/console make:entity Category
+2. Pozovemo komandu: php bin/console make:entity
+3. Dodamo sve što treba (fieldType: relation, relationType, relatedClass, da li želimo i OneToMany)
+
+Rezultat:
+* ORM ManyToOne anotacija
+/**
+ * @ORM\ManyToOne(targetEntity="App\Entity\Category", inversedBy="products")
+ */
+ 
+* Getteri i setteri za entitet
+
+ManyToOne je obavezna relacija, a OneToMany nije, samo ako želimo pristupati nizu entiteta koji su povezani s ovim entitetom.
+
+Rezultat:
+* ORM OneToMany anotacija
+/**
+ * @ORM\OneToMany(targetEntity="App\Entity\Product", mappedBy="category")
+ */
+
+4. Napravimo promjene u bazi:
+ php bin/console doctrine:migrations:diff
+ php bin/console doctrine:migrations:migrate
+
+5. Spremanje u bazu
+	$entityManager = $this->getDoctrine()->getManager();
+	$entityManager->persist($category);
+	$entityManager->persist($product);
+	$entityManager->flush();
+
+Kad napravimo flush, Symfony za nas dodaje strani ključ entitetu koji je ManyToOne.
+
+Dalje se može:
+* fetching related objects: https://symfony.com/doc/current/doctrine/associations.html#fetching-related-objects
+* joining related records: https://symfony.com/doc/current/doctrine/associations.html#joining-related-records
+* setting information for the inverse side: https://symfony.com/doc/current/doctrine/associations.html#joining-related-records

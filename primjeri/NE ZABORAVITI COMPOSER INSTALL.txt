@@ -1,0 +1,2 @@
+Nakon importa treba napraviti u cmd composer install naredbu.
+Php bin/console about za pregled svojstava projekta

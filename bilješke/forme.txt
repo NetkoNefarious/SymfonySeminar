@@ -1,0 +1,227 @@
+FORME
+https://symfony.com/doc/current/forms.html
+
+1. Instalacija: composer require symfony/form
+2. Kreiramo neku klasu
+3. Radimo formu u kontroleru: https://symfony.com/doc/current/forms.html#building-the-form
+
+class TaskController extends AbstractController
+{
+    public function new(Request $request)
+    {
+        // creates a task and gives it some dummy data for this example
+        $task = new Task();
+        $task->setTask('Write a blog post');
+        $task->setDueDate(new \DateTime('tomorrow'));
+
+        $form = $this->createFormBuilder($task)
+            ->add('task', TextType::class)
+            ->add('dueDate', DateType::class)
+            ->add('save', SubmitType::class, ['label' => 'Create Task'])
+            ->getForm();
+
+        return $this->render('task/new.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+}
+
+Što imamo tu?
+* Task objekt
+* $form - Forma koju stvorimo metodom $this->createFormBuilder($task)
+	* add metode kojima povezujemo članove klase i polja
+	* getForm metodu s kojom dobivamo formu
+* $form->createView() koji radi View iz forme te ga proslijeđuje u template
+
+4. Prikazujemo formu preko {{ form(form) }}
+
+5. U config/packages/twig.yaml ubacimo BS4 temu za sve forme
+twig:
+    form_themes: ['bootstrap_4_layout.html.twig']
+	
+Ostale opcije: https://symfony.com/doc/current/forms.html#rendering-the-form
+
+HANDLING FORM SUBMISSIONS (deserijalizacija iz forme u objekt):
+https://symfony.com/doc/current/forms.html#handling-form-submissions
+
+1. Dodati ovo u rutu s formom: 
+
+	if ($form->isSubmitted() && $form->isValid()) {
+        // $form->getData() holds the submitted values
+        // but, the original `$task` variable has also been updated
+        $task = $form->getData();
+		
+        // ... perform some action, such as saving the task to the database
+        // for example, if Task is a Doctrine entity, save it!
+        // $entityManager = $this->getDoctrine()->getManager();
+        // $entityManager->persist($task);
+        // $entityManager->flush();
+
+        return $this->redirectToRoute('task_success');
+    }
+		
+Napomene:
+* Be aware that the createView() method should be called after handleRequest() is called.
+Otherwise, changes done in the *_SUBMIT events aren't applied to the view (like validation errors).
+* Redirecting a user after a successful form submission prevents the user from being able to hit the
+"Refresh" button of their browser and re-post the data.
+
+VALIDACIJA FORME
+https://symfony.com/doc/current/forms.html#form-validation
+
+Gore smo naveli $form->isValid() metodu koja nam projerava da li objekt sadržava dobre podatke.
+
+1. Instalirati validaciju: composer require symfony/validator
+2. Validacija se radi tako da se postave ograničenja na neku klasu. Može se postaviti u anotacijama ili config/validation.yaml datoteci.
+
+ANOTACIJE
+	namespace App\Entity;
+
+	use Symfony\Component\Validator\Constraints as Assert;
+
+	class Task
+	{
+		/**
+		 * @Assert\NotBlank
+		 */
+		public $task;
+
+		/**
+		 * @Assert\NotBlank
+		 * @Assert\Type("\DateTime")
+		 */
+		protected $dueDate;
+	}
+	
+YAML
+	# config/validation.yaml
+	App\Entity\Task:
+		properties:
+			task:
+				- NotBlank: ~
+			dueDate:
+				- NotBlank: ~
+				- Type: \DateTime
+				
+PRIMJER HTML5 VALIDACIJE U TWIGU
+	{# templates/task/new.html.twig #}
+	{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+	{{ form_widget(form) }}
+	{{ form_end(form) }}
+				
+Built-in Field Types: https://symfony.com/doc/current/forms.html#built-in-field-types
+
+FIELD TYPE OPTIONS
+https://symfony.com/doc/current/forms.html#field-type-options
+
+Poljima forme se mogu prosljeđivati parametri koji modificiraju formu. Primjeri su u linku.
+Each field type has a number of different options that can be passed to it.
+Many of these are specific to the field type and details can be found in the documentation for each type.
+
+Required:
+* By default, the required option is set to true, meaning that HTML5-ready browsers
+will apply client-side validation if the field is left blank. If you don't want this behavior, either
+disable HTML5 validation or set the required option on your field to false.
+
+* Primjer:
+	->add('dueDate', DateType::class, [
+		'widget' => 'single_text',
+		'required' => false
+	])
+	
+* Also note that setting the required option to true will not result in server-side validation to be applied.
+In other words, if a user submits a blank value for the field (either with an old browser or web service, for example),
+it will be accepted as a valid value unless you use Symfony's NotBlank or NotNull validation constraint.
+
+Label:
+* ->add('dueDate', DateType::class, [
+    'widget' => 'single_text',
+    'label'  => 'Due Date',
+])
+
+* The label for a field can also be set in the template rendering the form, see below.
+* If you don't need a label associated to your input, you can disable it by setting its value to false.
+
+* By default, <label> tags of required fields are rendered with a required CSS class,
+so you can display an asterisk for required fields applying these CSS styles:
+
+label.required:before {
+    content: "*";
+}
+
+FIELD TYPE GUESSING: https://symfony.com/doc/current/forms.html#field-type-guessing
+Symfony može gađati tip polja na temelju validacije.
+
+FIELD TYPE OPTIONS GUESSING: https://symfony.com/doc/current/forms.html#field-type-options-guessing
+Symfony može gađati atribute polja na temelju validacije i Doctrine anotacija.
+
+Mogu se i mijenjati atributi polja:
+	->add('task', null, ['attr' => ['maxlength' => 4]])
+	
+CREATING FORM CLASSES
+As you've seen, a form can be created and used directly in a controller.
+However, a better practice is to build the form in a separate, standalone PHP class,
+which can then be reused anywhere in your application.
+
+1. Kreiramo klasu koja će sadržavati logiku stvaranja forme te klase:
+
+PRIMJER:
+	// src/Form/TaskType.php
+	namespace App\Form;
+
+	use Symfony\Component\Form\AbstractType;
+	use Symfony\Component\Form\FormBuilderInterface;
+	use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+
+	class TaskType extends AbstractType
+	{
+		public function buildForm(FormBuilderInterface $builder, array $options)
+		{
+			$builder
+				->add('task')
+				->add('dueDate', null, ['widget' => 'single_text'])
+				->add('save', SubmitType::class)
+			;
+		}
+	}
+	
+2. U kontroleru napravimo formu na temelju te form klase
+
+PRIMJER:
+	// src/Controller/TaskController.php
+	use App\Form\TaskType;
+
+	public function new()
+	{
+		$task = ...;
+		$form = $this->createForm(TaskType::class, $task);
+
+		// ...
+	}
+	
+NAPOMENA:
+* Every form needs to know the name of the class that holds the underlying data (e.g. App\Entity\Task).
+Usually, this is just guessed based off of the object passed to the second argument to createForm() (i.e. $task).
+Later, when you begin embedding forms, this will no longer be sufficient.
+It's generally a good idea to explicitly specify the data_class option by adding the following to your form type class:
+	// src/Form/TaskType.php
+	use App\Entity\Task;
+	use Symfony\Component\OptionsResolver\OptionsResolver;
+
+	// ...
+	public function configureOptions(OptionsResolver $resolver)
+	{
+		$resolver->setDefaults([
+			'data_class' => Task::class,
+		]);
+	}
+* When mapping forms to objects, all fields are mapped.
+Any fields on the form that do not exist on the mapped object will cause an exception to be thrown.
+In cases where you need extra fields in the form (for example: a "do you agree with these terms" checkbox)
+that will not be mapped to the underlying object, you need to set the mapped option to false
+
+PRIMJER: ->add('agreeTerms', CheckboxType::class, ['mapped' => false])
+
+* If there are any fields on the form that aren't included in the submitted data, those fields will be explicitly set to null.
+
+* The field data can be accessed in a controller with: $form->get('agreeTerms')->getData();

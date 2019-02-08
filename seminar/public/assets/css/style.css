@@ -1,0 +1,49 @@
+html {
+  font-size: 14px;
+}
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.container {
+  max-width: 960px;
+}
+
+.pricing-header {
+  max-width: 700px;
+}
+
+.card-deck .card {
+  min-width: 220px;
+}
+
+/* MOJ CSS */
+main tbody > tr {
+  transition: background-color 0.2s;
+}
+
+main tbody > tr:hover {
+  background-color: #eeeeee;
+}
+
+.list-group .list-group-item * {
+  padding-right: 0.5rem;
+}
+
+.container > form {
+  margin: 0 auto;
+  justify-content: center;
+  text-align: center;
+}
+
+.container > form > * {
+  margin: 0 auto 1em auto;
+}
+
+@media only screen and (min-width: 576px) {
+  .container > form {
+    width: 50%;
+  }
+}
